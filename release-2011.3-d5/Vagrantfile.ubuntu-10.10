@@ -21,8 +21,8 @@ Vagrant::Config.run do |config|
   end
 
   config.vm.provision :chef_solo do |chef|
-     chef.recipe_url = "https://github.com/rcbops/chef-cookbooks/tarball/release-2011.3-d5"
-     chef.cookbooks_path = [:vm, "rcbops-chef-cookbooks-a48ce97/cookbooks"]
+     chef.recipe_url = "https://raw.github.com/rcbops/chef-cookbooks/master/cookbooks-release-2011.3-d5.tgz"
+     chef.cookbooks_path = [:vm, "cookbooks"]
      chef.add_recipe "apt"
      chef.add_recipe "openstack::allinone"
   
