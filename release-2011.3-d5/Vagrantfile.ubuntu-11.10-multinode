@@ -1,0 +1,86 @@
+Vagrant::Config.run do |config|
+  config.vm.define :controller do |config|
+    config.vm.box_url = "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.10.box"
+    config.vm.box = "ubuntu-11.10"
+    config.vm.forward_port "keystone-admin-api", 5000, 5000
+    config.vm.forward_port "keystone-api", 5001, 5001
+    config.vm.forward_port "openstack-dash", 80, 8080
+    config.vm.forward_port "glance-api", 9292, 9292
+    config.vm.forward_port "osapi", 8774, 8774
+    config.vm.forward_port "ec2_api", 8773, 8773
+    config.vm.network("192.168.10.10", {:adapter=>1})
+    config.vm.network("192.168.100.254", {:adapter=>2})
+    config.vm.network("192.168.200.254", {:adapter=>3})
+    config.vm.host_name = "controller.example.com"
+    config.vm.customize do |vm|
+      vm.memory_size = 1024
+      vm.name = "OpenStack Infrastructure Node"
+    end
+    config.vm.provision :chef_solo do |chef|
+      chef.recipe_url = "https://raw.github.com/rcbops/chef-cookbooks/master/cookbooks-release-2011.3-d5.tgz"
+      chef.cookbooks_path = [:vm, "cookbooks"]
+      # chef.log_level = :debug
+      chef.add_recipe "apt"
+      chef.add_recipe "openstack::controller"
+      chef.json = { 
+        :virt_type => "qemu",
+        :controller_ipaddress => "192.168.10.10",
+        :package_url => "http://ops.monkeypuppetlabs.com/packages",
+        :package_component => "diablo-d5"
+      }
+    end
+  end
+
+  config.vm.define :compute1 do |config|
+    config.vm.box_url = "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.10.box"
+    config.vm.box = "ubuntu-11.10"
+    config.vm.network("192.168.10.11", {:adapter=>1})
+    config.vm.network("192.168.100.253", {:adapter=>2})
+    config.vm.network("192.168.200.253", {:adapter=>3})
+    config.vm.host_name = "compute1.example.com"
+    config.vm.customize do |vm|
+      vm.memory_size = 2048
+      vm.name = "OpenStack Compute Node 1"
+    end
+    config.vm.provision :chef_solo do |chef|
+      chef.recipe_url = "https://raw.github.com/rcbops/chef-cookbooks/master/cookbooks-release-2011.3-d5.tgz"
+      chef.cookbooks_path = [:vm, "cookbooks"]
+      # chef.log_level = :debug
+      chef.add_recipe "apt"
+      chef.add_recipe "openstack::compute"
+      chef.json = { 
+        :virt_type => "qemu",
+        :controller_ipaddress => "192.168.10.10",
+        :package_url => "http://ops.monkeypuppetlabs.com/packages",
+        :package_component => "diablo-d5"
+      }
+    end
+  end
+
+  config.vm.define :compute2 do |config|
+    config.vm.box_url = "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.10.box"
+    config.vm.box = "ubuntu-11.10"
+    config.vm.network("192.168.10.12", {:adapter=>1})
+    config.vm.network("192.168.100.252", {:adapter=>2})
+    config.vm.network("192.168.200.252", {:adapter=>3})
+    config.vm.host_name = "compute2.example.com"
+    config.vm.customize do |vm|
+      vm.memory_size = 2048
+      vm.name = "OpenStack Compute Node 2"
+    end
+    config.vm.provision :chef_solo do |chef|
+      chef.recipe_url = "https://raw.github.com/rcbops/chef-cookbooks/master/cookbooks-release-2011.3-d5.tgz"
+      chef.cookbooks_path = [:vm, "cookbooks"]
+      # chef.log_level = :debug
+      chef.add_recipe "apt"
+      chef.add_recipe "openstack::compute"
+      chef.json = { 
+        :virt_type => "qemu",
+        :controller_ipaddress => "192.168.10.10",
+        :package_url => "http://ops.monkeypuppetlabs.com/packages",
+        :package_component => "diablo-d5"
+      }
+    end
+  end
+
+end
